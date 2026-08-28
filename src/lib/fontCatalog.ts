@@ -1,4 +1,4 @@
-// Font catalog for AS YOU WISH Font Studio.
+// Font catalog for As You Wish Font Studio.
 // Metadata only — no network calls. Fonts are lazy-loaded on first use.
 
 export type FontCategory =

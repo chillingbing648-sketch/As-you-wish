@@ -1,4 +1,4 @@
-name: Deploy AS YOU WISH
+name: Deploy As You Wish
 
 on:
   push:

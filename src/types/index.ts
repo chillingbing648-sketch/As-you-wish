@@ -1,4 +1,4 @@
-// Core domain types for AS YOU WISH.
+// Core domain types for As You Wish.
 // Extending object "data" shapes (drawing strokes, stickers, image frames)
 // as new CanvasObjectBase variants, so old stored objects keep loading —
 // every new field is optional and every reader supplies a sensible default.
