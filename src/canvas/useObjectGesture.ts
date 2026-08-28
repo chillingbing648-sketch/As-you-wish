@@ -115,16 +115,61 @@ export function useObjectGesture() {
       if (!g) return;
 
       if (g.mode === 'move') {
-        const dx = (e.clientX - g.startPointerX) / g.zoom;
-        const dy = (e.clientY - g.startPointerY) / g.zoom;
+        const rawDx = (e.clientX - g.startPointerX) / g.zoom;
+        const rawDy = (e.clientY - g.startPointerY) / g.zoom;
+        let targetX = g.startObj.x + rawDx;
+        let targetY = g.startObj.y + rawDy;
+
+        // Smart snapping against other canvas objects (tolerance: 6px)
+        const doc = useCanvasStore.getState().doc;
+        if (doc) {
+          const SNAP_THRESHOLD = 6;
+          const currentW = g.startObj.width;
+          const currentH = g.startObj.height;
+          const currentCenterX = targetX + currentW / 2;
+          const currentCenterY = targetY + currentH / 2;
+          const currentRight = targetX + currentW;
+          const currentBottom = targetY + currentH;
+
+          for (const otherId of doc.objectOrder) {
+            if (otherId === g.objectId) continue;
+            const other = doc.objects[otherId];
+            if (!other || other.hidden) continue;
+
+            const otherCenterX = other.x + other.width / 2;
+            const otherCenterY = other.y + other.height / 2;
+            const otherRight = other.x + other.width;
+            const otherBottom = other.y + other.height;
+
+            // X-axis snapping
+            if (Math.abs(targetX - other.x) < SNAP_THRESHOLD) {
+              targetX = other.x;
+            } else if (Math.abs(currentCenterX - otherCenterX) < SNAP_THRESHOLD) {
+              targetX = otherCenterX - currentW / 2;
+            } else if (Math.abs(currentRight - otherRight) < SNAP_THRESHOLD) {
+              targetX = otherRight - currentW;
+            }
+
+            // Y-axis snapping
+            if (Math.abs(targetY - other.y) < SNAP_THRESHOLD) {
+              targetY = other.y;
+            } else if (Math.abs(currentCenterY - otherCenterY) < SNAP_THRESHOLD) {
+              targetY = otherCenterY - currentH / 2;
+            } else if (Math.abs(currentBottom - otherBottom) < SNAP_THRESHOLD) {
+              targetY = otherBottom - currentH;
+            }
+          }
+        }
+
         scheduleApply({
-          x: g.startObj.x + dx,
-          y: g.startObj.y + dy,
+          x: targetX,
+          y: targetY,
           width: g.startObj.width,
           height: g.startObj.height,
           rotation: g.startObj.rotation,
         });
       } else if (g.mode === 'resize') {
+
         const dx = (e.clientX - g.startPointerX) / g.zoom;
         const dy = (e.clientY - g.startPointerY) / g.zoom;
         let { x, y, width, height } = g.startObj;

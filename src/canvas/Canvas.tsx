@@ -20,6 +20,20 @@ function pointsToPath(points: { x: number; y: number }[]) {
   return points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(' ');
 }
 
+function pointsToSmoothedPath(points: { x: number; y: number }[]) {
+  if (points.length <= 2) return pointsToPath(points);
+  let d = `M ${points[0].x.toFixed(1)} ${points[0].y.toFixed(1)}`;
+  for (let i = 1; i < points.length - 1; i++) {
+    const xc = (points[i].x + points[i + 1].x) / 2;
+    const yc = (points[i].y + points[i + 1].y) / 2;
+    d += ` Q ${points[i].x.toFixed(1)} ${points[i].y.toFixed(1)}, ${xc.toFixed(1)} ${yc.toFixed(1)}`;
+  }
+  const last = points[points.length - 1];
+  d += ` L ${last.x.toFixed(1)} ${last.y.toFixed(1)}`;
+  return d;
+}
+
+
 export function Canvas() {
   const doc = useCanvasStore((s) => s.doc);
   const selectedIds = useCanvasStore((s) => s.selectedIds);
@@ -78,8 +92,9 @@ export function Canvas() {
   // Keyboard: space to pan, delete to remove, escape to deselect
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
-      const active = document.activeElement;
-      const isEditingText = active && active.getAttribute('contenteditable') === 'true';
+      const target = e.target as HTMLElement;
+      // More reliable check: use isContentEditable property instead of getAttribute
+      const isEditingText = target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable);
       if (isEditingText) return;
 
       if (e.code === 'Space') spacePressed.current = true;
@@ -288,14 +303,33 @@ export function Canvas() {
         drawingRaf.current = null;
       }
       const points = drawingPoints.current;
-      if (points.length > 1) {
+
+      if (drawSettings.tool === 'eraser' && points.length > 0 && doc) {
+        // Eraser hit-tests any drawing object intersecting the eraser points
+        const hitDrawingIds: string[] = [];
+        const pad = Math.max(12, drawSettings.strokeWidth);
+
+        Object.values(doc.objects).forEach((o) => {
+          if (o.type !== 'drawing' || o.locked || o.hidden) return;
+          // Bounding box test against eraser stroke points
+          const isHit = points.some(
+            (p) => p.x >= o.x - pad && p.x <= o.x + o.width + pad && p.y >= o.y - pad && p.y <= o.y + o.height + pad
+          );
+          if (isHit) hitDrawingIds.push(o.id);
+        });
+
+        if (hitDrawingIds.length > 0) {
+          useCanvasStore.getState().deleteObjects(hitDrawingIds);
+        }
+      } else if (points.length > 1) {
         const b = drawingBounds.current;
         const pad = Math.max(8, drawSettings.strokeWidth);
-        // Store the path in the object's own local coordinate space (offset
-        // by its bounding box origin) so it resizes/rotates correctly through
-        // the same handles every other object uses, with no special-casing.
         const localPoints = points.map((p) => ({ x: p.x - (b.minX - pad), y: p.y - (b.minY - pad) }));
-        const path = pointsToPath(localPoints);
+        const path = drawSettings.smoothing ? pointsToSmoothedPath(localPoints) : pointsToPath(localPoints);
+
+        const lineCap = drawSettings.tool === 'fountain' || drawSettings.tool === 'highlighter' ? 'square' : 'round';
+        const linejoin = drawSettings.tool === 'highlighter' ? 'miter' : 'round';
+
         addObject({
           id: crypto.randomUUID(),
           type: 'drawing',
@@ -314,7 +348,9 @@ export function Canvas() {
             stroke: drawSettings.stroke,
             strokeWidth: drawSettings.strokeWidth,
             opacity: drawSettings.opacity,
-            lineCap: 'round',
+            lineCap,
+            drawTool: drawSettings.tool,
+            linejoin,
           },
         });
       }
@@ -324,8 +360,9 @@ export function Canvas() {
       activePointers.current.delete(pointerId);
       isPanning.current = false;
     },
-    [addObject, drawSettings],
+    [addObject, drawSettings, doc],
   );
+
 
   const handleViewportPointerUp = useCallback(
     (e: React.PointerEvent) => {

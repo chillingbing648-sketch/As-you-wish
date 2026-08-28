@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@500;600&family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&display=swap');
 
 :root {
-  /* Palette — blush / lavender / sage / butter / cream / sky / warm paper / dark ink */
+  /* ── Palette ── blush / lavender / sage / butter / cream / sky / warm paper / dark ink */
   --paper: #FBF8F4;
   --paper-dim: #F5EFE8;
   --paper-3: #EEE5DC;
@@ -12,6 +12,7 @@
 
   --rose: #D78C9F;
   --rose-soft: #F1D6DE;
+  --rose-hover: #FAE8EE;
   --lilac: #B8A9D3;
   --lilac-soft: #E4DCF2;
   --sage: #A9BEA9;
@@ -21,29 +22,64 @@
   --sky: #BCD7E8;
   --sky-soft: #E1EDF4;
 
+  /* Semantic surfaces */
+  --surface: rgba(255, 253, 251, 0.94);
+  --surface-blur: rgba(255, 253, 251, 0.86);
+  --surface-raised: #FFFDFB;
+  --surface-overlay: rgba(41, 39, 42, 0.38);
+
   /* Back-compat aliases used across components from the previous pass */
   --clay: var(--rose);
   --clay-soft: var(--rose-soft);
   --gold: var(--butter);
   --gold-soft: var(--butter-soft);
-  --line: rgba(63, 52, 58, 0.11);
+  --line: rgba(63, 52, 58, 0.10);
   --line-strong: rgba(63, 52, 58, 0.18);
 
-  --shadow-sm: 0 3px 12px rgba(55, 42, 49, 0.07);
-  --shadow-md: 0 12px 32px rgba(55, 42, 49, 0.11);
-  --shadow-lg: 0 22px 60px rgba(55, 42, 49, 0.16);
+  /* Shadows — layered warmth */
+  --shadow-xs: 0 1px 4px rgba(55, 42, 49, 0.05);
+  --shadow-sm: 0 2px 10px rgba(55, 42, 49, 0.07);
+  --shadow-md: 0 8px 28px rgba(55, 42, 49, 0.11);
+  --shadow-lg: 0 20px 56px rgba(55, 42, 49, 0.15);
+  --shadow-xl: 0 32px 80px rgba(55, 42, 49, 0.20);
 
+  /* Typography */
   --font-display: 'Fraunces', Georgia, serif;
   --font-body: 'DM Sans', Inter, -apple-system, BlinkMacSystemFont, sans-serif;
   --font-hand: 'Caveat', cursive;
 
+  /* Radii */
+  --radius-xs: 5px;
   --radius-sm: 8px;
   --radius-md: 13px;
   --radius-lg: 20px;
   --radius-xl: 28px;
+  --radius-pill: 999px;
+
+  /* Spacing scale */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 20px;
+  --sp-6: 24px;
+
+  /* Transitions */
+  --ease-pop: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --duration-fast: 120ms;
+  --duration-base: 200ms;
+  --duration-slow: 320ms;
+
+  /* Focus ring */
+  --focus-ring: 0 0 0 3px rgba(215, 140, 159, 0.35);
+
+  /* Text highlight */
+  --text-highlight: rgba(255, 232, 138, 0.55);
 
   color-scheme: light;
 }
+
 
 * {
   box-sizing: border-box;

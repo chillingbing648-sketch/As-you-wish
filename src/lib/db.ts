@@ -1,5 +1,5 @@
 import { openDB, type DBSchema, type IDBPDatabase } from 'idb';
-import type { CanvasDoc, Notebook } from '../types';
+import type { CanvasDoc, Notebook, UserPrefs } from '../types';
 
 interface AsYouWishDB extends DBSchema {
   notebooks: {
@@ -12,17 +12,21 @@ interface AsYouWishDB extends DBSchema {
     value: CanvasDoc;
     indexes: { 'by-notebookId': string };
   };
+  userPrefs: {
+    key: string;
+    value: UserPrefs;
+  };
 }
 
 const DB_NAME = 'as-you-wish';
-const DB_VERSION = 1;
+const DB_VERSION = 2; // v2 adds userPrefs store
 
 let dbPromise: Promise<IDBPDatabase<AsYouWishDB>> | null = null;
 
 function getDB() {
   if (!dbPromise) {
     dbPromise = openDB<AsYouWishDB>(DB_NAME, DB_VERSION, {
-      upgrade(db) {
+      upgrade(db, oldVersion) {
         if (!db.objectStoreNames.contains('notebooks')) {
           const store = db.createObjectStore('notebooks', { keyPath: 'id' });
           store.createIndex('by-updatedAt', 'updatedAt');
@@ -30,6 +34,9 @@ function getDB() {
         if (!db.objectStoreNames.contains('canvases')) {
           const store = db.createObjectStore('canvases', { keyPath: 'id' });
           store.createIndex('by-notebookId', 'notebookId');
+        }
+        if (oldVersion < 2 && !db.objectStoreNames.contains('userPrefs')) {
+          db.createObjectStore('userPrefs', { keyPath: 'id' });
         }
       },
     });
@@ -82,4 +89,27 @@ export async function getCanvasByNotebook(notebookId: string): Promise<CanvasDoc
 export async function putCanvas(doc: CanvasDoc): Promise<void> {
   const db = await getDB();
   await db.put('canvases', doc);
+}
+
+// ---- UserPrefs ----
+
+const DEFAULT_PREFS: UserPrefs = {
+  id: 'singleton',
+  recentColors: [],
+  favoriteColors: [],
+  fontFavorites: [],
+  fontRecents: [],
+  savedPalettes: [],
+  savedElements: [],
+};
+
+export async function getUserPrefs(): Promise<UserPrefs> {
+  const db = await getDB();
+  const prefs = await db.get('userPrefs', 'singleton');
+  return prefs ?? { ...DEFAULT_PREFS };
+}
+
+export async function putUserPrefs(prefs: UserPrefs): Promise<void> {
+  const db = await getDB();
+  await db.put('userPrefs', prefs);
 }

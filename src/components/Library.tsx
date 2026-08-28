@@ -11,6 +11,17 @@ interface Props {
 // content, not interface chrome, so plain symbol glyphs are appropriate here.
 const COVER_ART = ['✦', '♡', '✿', '☁', '✧', '❀'];
 
+export const POOKIE_THEMES = [
+  { id: 'soft-girl', name: 'Soft Girl 🌸', cover: '#FFF0F3', title: 'Soft aesthetic diary' },
+  { id: 'studycore', name: 'Studycore ☕', cover: '#E9F0E7', title: 'Studycore Notebook' },
+  { id: 'scrapbook', name: 'Scrapbook ✂️', cover: '#FDF7DC', title: 'Scrapbook & Memory Book' },
+  { id: 'minimal', name: 'Minimal ✦', cover: '#F7F0E8', title: 'Minimal Studio' },
+  { id: 'vintage', name: 'Vintage 📜', cover: '#EEDFC8', title: 'Vintage Chronicle' },
+  { id: 'dreamy', name: 'Dreamy ☁️', cover: '#EEE9F7', title: 'Dreamy Journal' },
+  { id: 'academic', name: 'Academic 🏛️', cover: '#E1EDF4', title: 'Academic Research' },
+  { id: 'travel', name: 'Travel ✈️', cover: '#FFE5D9', title: 'Wanderlust Travelogue' },
+];
+
 export function Library({ onOpen }: Props) {
   const { notebooks, loaded, refresh, createNotebook, toggleFavorite, archiveNotebook, removeNotebook } =
     useNotebookStore();
@@ -33,8 +44,8 @@ export function Library({ onOpen }: Props) {
     return list;
   }, [notebooks, filter, query]);
 
-  const handleCreate = async () => {
-    const nb = await createNotebook('Little notebook', randomCoverColor());
+  const handleCreate = async (customTitle = 'Little notebook', customCover = randomCoverColor()) => {
+    const nb = await createNotebook(customTitle, customCover);
     onOpen(nb);
   };
 
@@ -58,13 +69,31 @@ export function Library({ onOpen }: Props) {
               onChange={(e) => setQuery(e.target.value)}
             />
           </label>
-          <button className="library-new-btn" onClick={handleCreate}>
+          <button className="library-new-btn" onClick={() => handleCreate()}>
             <Icon name="plus" size={17} /> New notebook
           </button>
         </div>
       </header>
 
+      {/* Pookie & Pinterest Aesthetic Theme Presets */}
+      <div className="library-themes-scroll">
+        <span className="library-themes-label">Presets:</span>
+        {POOKIE_THEMES.map((t) => (
+          <button
+            key={t.id}
+            className="theme-preset-pill"
+            style={{ '--theme-cover': t.cover } as React.CSSProperties}
+            onClick={() => handleCreate(t.title, t.cover)}
+            title={`Create ${t.name} notebook`}
+          >
+            <span className="theme-pill-dot" />
+            <span>{t.name}</span>
+          </button>
+        ))}
+      </div>
+
       <nav className="library-filters" aria-label="Notebook filters">
+
         {([
           ['all', 'All'],
           ['favorites', 'Favorites'],
