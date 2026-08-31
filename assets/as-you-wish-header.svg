@@ -1,0 +1,86 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="520" viewBox="0 0 1600 520" role="img" aria-labelledby="title desc">
+  <title id="title">As You Wish — Create Freely. Arrange Beautifully. Make It Yours.</title>
+  <desc id="desc">A soft pastel scrapbook-inspired header with notebooks, stars, flowers, bows and a playful creative workspace.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FFF3F7"/>
+      <stop offset="0.42" stop-color="#EDE7FF"/>
+      <stop offset="0.75" stop-color="#E7F5EE"/>
+      <stop offset="1" stop-color="#FFF4D9"/>
+    </linearGradient>
+    <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="12" stdDeviation="14" flood-color="#7A6B83" flood-opacity="0.16"/>
+    </filter>
+    <pattern id="dots" width="26" height="26" patternUnits="userSpaceOnUse">
+      <circle cx="3" cy="3" r="1.5" fill="#B8AFC8" opacity="0.32"/>
+    </pattern>
+  </defs>
+
+  <rect width="1600" height="520" rx="36" fill="url(#bg)"/>
+  <rect x="18" y="18" width="1564" height="484" rx="30" fill="url(#dots)" opacity="0.55"/>
+
+  <g opacity="0.72">
+    <circle cx="135" cy="102" r="72" fill="#FFD7E3"/>
+    <circle cx="1450" cy="112" r="92" fill="#DCD4FF"/>
+    <circle cx="1510" cy="410" r="74" fill="#D8F0E3"/>
+  </g>
+
+  <g transform="translate(92 94) rotate(-7)" filter="url(#shadow)">
+    <rect width="300" height="220" rx="18" fill="#FFFDF9"/>
+    <rect x="0" y="0" width="300" height="48" rx="18" fill="#F3C7D6"/>
+    <circle cx="26" cy="24" r="7" fill="#FFFDF9"/>
+    <circle cx="50" cy="24" r="7" fill="#FFFDF9"/>
+    <circle cx="74" cy="24" r="7" fill="#FFFDF9"/>
+    <text x="28" y="92" font-family="Georgia, serif" font-size="26" fill="#594D62">little ideas</text>
+    <path d="M30 116 C82 101 104 135 154 116 S230 101 270 122" fill="none" stroke="#E7AFC3" stroke-width="5" stroke-linecap="round"/>
+    <path d="M30 154 C78 139 108 172 158 153 S230 140 270 158" fill="none" stroke="#B9CFE0" stroke-width="5" stroke-linecap="round"/>
+    <text x="28" y="194" font-family="cursive" font-size="24" fill="#8B7690">♡ make it yours ♡</text>
+  </g>
+
+  <g transform="translate(1225 255) rotate(7)" filter="url(#shadow)">
+    <rect width="260" height="168" rx="22" fill="#FFFDF9"/>
+    <rect x="16" y="16" width="228" height="112" rx="14" fill="#F0ECFA"/>
+    <circle cx="130" cy="144" r="8" fill="#D7C8E8"/>
+    <path d="M72 82 l22 -22 l18 18 l28 -34 l34 38" fill="none" stroke="#C29AB2" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="211" cy="45" r="9" fill="#F4C8D8"/>
+  </g>
+
+  <g transform="translate(1170 82)">
+    <path d="M44 52 C10 8 -18 28 6 62 C20 82 43 71 52 58 C61 71 84 82 98 62 C122 28 94 8 60 52 C54 60 50 60 44 52Z" fill="#EAAFC4"/>
+    <path d="M52 58 C42 91 34 113 20 133" fill="none" stroke="#C48DA8" stroke-width="6" stroke-linecap="round"/>
+    <path d="M52 58 C62 91 70 113 84 133" fill="none" stroke="#C48DA8" stroke-width="6" stroke-linecap="round"/>
+  </g>
+
+  <g fill="#9B89C8" opacity="0.85">
+    <path d="M395 78 l7 18 l19 7 l-19 7 l-7 19 l-7-19 l-19-7 l19-7z"/>
+    <path d="M1110 410 l6 15 l16 6 l-16 6 l-6 16 l-6-16 l-16-6 l16-6z"/>
+  </g>
+
+  <g transform="translate(515 84)">
+    <text x="285" y="105" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="76" font-weight="700" fill="#5B5064">As You Wish</text>
+    <text x="285" y="151" text-anchor="middle" font-family="Arial, sans-serif" font-size="22" letter-spacing="5" fill="#8C7F91">CREATE FREELY · ARRANGE BEAUTIFULLY</text>
+    <text x="285" y="197" text-anchor="middle" font-family="cursive" font-size="29" fill="#B07C96">make it yours ♡</text>
+  </g>
+
+  <g transform="translate(620 300)" filter="url(#shadow)">
+    <rect x="0" y="0" width="520" height="122" rx="26" fill="#FFFDF9" opacity="0.95"/>
+    <rect x="26" y="25" width="74" height="74" rx="18" fill="#F8D8E3"/>
+    <text x="63" y="75" text-anchor="middle" font-size="38">✎</text>
+    <rect x="116" y="25" width="74" height="74" rx="18" fill="#DDD6F4"/>
+    <text x="153" y="75" text-anchor="middle" font-size="38">✦</text>
+    <rect x="206" y="25" width="74" height="74" rx="18" fill="#D8EEE3"/>
+    <text x="243" y="75" text-anchor="middle" font-size="38">♡</text>
+    <rect x="296" y="25" width="74" height="74" rx="18" fill="#F8E9C9"/>
+    <text x="333" y="75" text-anchor="middle" font-size="38">🧸</text>
+    <text x="400" y="58" font-family="Arial, sans-serif" font-size="18" fill="#6F6477">notebook</text>
+    <text x="400" y="84" font-family="cursive" font-size="21" fill="#A87D94">your tiny universe</text>
+  </g>
+
+  <g fill="#D79DB5">
+    <circle cx="448" cy="388" r="6"/><circle cx="1160" cy="132" r="5"/><circle cx="1380" cy="355" r="7"/>
+  </g>
+  <g stroke="#A98EB6" stroke-width="5" stroke-linecap="round" opacity="0.75">
+    <path d="M455 416 q22 -28 44 0" fill="none"/>
+    <path d="M1335 82 q18 -22 36 0" fill="none"/>
+  </g>
+</svg>
