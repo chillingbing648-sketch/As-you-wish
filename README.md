@@ -3,6 +3,13 @@
 # 🎀 As You Wish
 
 ![As You Wish](https://capsule-render.vercel.app/api?type=waving\&color=F7C8D0,CEC4E8,BFD8C2\&height=220\&section=header\&text=As%20You%20Wish\&fontSize=58\&fontColor=ffffff\&animation=fadeIn\&fontAlignY=38)
+<div align="center">
+
+<img src="preview.png" alt="As You Wish — Create Freely. Arrange Beautifully. Make It Yours." width="100%">
+
+<br>
+
+
 
 ### **Create Freely. Arrange Beautifully. Make It Yours.**
 
