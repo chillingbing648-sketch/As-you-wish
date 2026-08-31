@@ -1,507 +1,276 @@
 <div align="center">
 
+<img src="./assets/as-you-wish-header.svg" alt="As You Wish — Create Freely. Arrange Beautifully. Make It Yours." width="100%">
+
 # 🎀 As You Wish
-
-![As You Wish](https://capsule-render.vercel.app/api?type=waving\&color=F7C8D0,CEC4E8,BFD8C2\&height=220\&section=header\&text=As%20You%20Wish\&fontSize=58\&fontColor=ffffff\&animation=fadeIn\&fontAlignY=38)
-<div align="center">
-
-<img src="preview.png" alt="As You Wish — Create Freely. Arrange Beautifully. Make It Yours." width="100%">
-
-<br>
-
-
 
 ### **Create Freely. Arrange Beautifully. Make It Yours.**
 
-*A playful digital notebook and infinite creative canvas for thoughts, memories, doodles, images, stickers, and everything your brain decides to throw at you.*
-
-<br/>
+*A playful, local-first digital notebook and infinite creative canvas for notes, memories, doodles, images, stickers, shapes and tiny pieces of inspiration.*
 
 [![Live App](https://img.shields.io/badge/🎀%20LIVE%20APP-F7C8D0?style=for-the-badge)](https://chillingbing648-sketch.github.io/As-you-wish/)
-[![Source](https://img.shields.io/badge/💻%20SOURCE-181717?style=for-the-badge\&logo=github)](https://github.com/chillingbing648-sketch/As-you-wish)
-[![React](https://img.shields.io/badge/React%2019-61DAFB?style=for-the-badge\&logo=react\&logoColor=white)](https://react.dev/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge\&logo=typescript\&logoColor=white)](https://www.typescriptlang.org/)
-[![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge\&logo=vite\&logoColor=white)](https://vite.dev/)
-[![Zustand](https://img.shields.io/badge/Zustand-443E38?style=for-the-badge)](https://zustand.docs.pmnd.rs/)
+[![Repository](https://img.shields.io/badge/💻%20REPOSITORY-181717?style=for-the-badge&logo=github)](https://github.com/chillingbing648-sketch/As-you-wish)
+[![React 19](https://img.shields.io/badge/React%2019-61DAFB?style=for-the-badge&logo=react&logoColor=white)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Vite 8](https://img.shields.io/badge/Vite%208-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vite.dev/)
+[![Zustand 5](https://img.shields.io/badge/Zustand%205-443E38?style=for-the-badge)](https://zustand.docs.pmnd.rs/)
 
-<br/>
-
-**♡ Digital Notebook · Infinite Canvas · Scrapbook · Doodles · Stickers · Memories ♡**
+**♡ Digital Notebook · Infinite Canvas · Scrapbook · Drawing · Stickers · Memories ♡**
 
 </div>
 
 ---
 
-# 🌷 What is As You Wish?
+## 🌷 At a Glance
 
-**As You Wish** is a creative digital notebook designed around one simple idea:
-
-> ### *Your workspace should feel like yours.*
-
-Traditional note-taking apps give you boxes.
-
-Whiteboards give you infinite space.
-
-Scrapbooks give you personality.
-
-**As You Wish tries to give you all three.** ♡
-
-It's a playful canvas where you can write, draw, decorate, arrange, rotate, resize, layer and experiment without being forced into a rigid document structure.
-
-Think:
-
-```text
-             Pinterest
-                 +
-          Digital Journal
-                 +
-             Scrapbook
-                 +
-          Infinite Canvas
-                 +
-           Tiny bit of magic
-                 ↓
-          ┌──────────────┐
-          │ AS YOU WISH ♡│
-          └──────────────┘
-```
-
-### In short:
-
-**You bring the thought.
-You decide where it goes.
-The canvas does the rest.**
+| | |
+|---|---|
+| **Product** | Creative notebook + infinite canvas |
+| **Frontend** | React `19.2.8` + TypeScript `~6.0.2` |
+| **Build** | Vite `8.2.2` |
+| **State** | Zustand `5.0.15` |
+| **Persistence** | IndexedDB via `idb` `8.0.3` |
+| **Linting** | Oxlint `1.79.0` |
+| **Deployment** | GitHub Actions → GitHub Pages |
+| **Status** | MVP / Active Creative Development |
 
 ---
 
-# ✨ Preview
+# ✨ Real Application Preview
 
 <div align="center">
 
 <a href="https://chillingbing648-sketch.github.io/As-you-wish/">
-
-<img src="./public/preview.png" alt="As You Wish Application Preview" width="95%"/>
-
+  <img src="./Preview.png" alt="As You Wish application preview — click to open the live app" width="96%">
 </a>
 
-### 👆 Click the preview to open the live application
+<br>
 
-*Your little digital world, captured in one screenshot.* ♡
+**👆 Click the preview to open the live application**
+
+<sub>Preview sourced directly from the repository's <code>Preview.png</code>.</sub>
 
 </div>
 
 ---
 
-# 🎀 The Idea
+# 🎀 What is As You Wish?
 
-Most productivity applications ask:
+**As You Wish** is built around one simple idea:
 
-> *How can we make you more productive?*
+> ### *Your workspace should feel like yours.*
 
-**As You Wish** asks something slightly different:
+Traditional note apps give you boxes. Whiteboards give you space. Scrapbooks give you personality.
 
-> *How can we make you want to create?*
+**As You Wish brings those ideas together in one playful canvas.**
 
-Because ideas aren't always neat.
-
-Sometimes an idea looks like:
+Write something down. Drop in a photo. Draw over it. Add a sticker. Move everything around. Resize it. Rotate it. Layer it. Lock it. Change the paper.
 
 ```text
-         "I should write this down"
-                    ↓
-                ✎ a note
-                    ↓
-              🖼 a picture
-                    ↓
-             ♡ random sticker
-                    ↓
-              ✧ tiny doodle
-                    ↓
-             "wait... that's cute"
-                    ↓
+                 a thought
+                     ↓
+                  ✎ a note
+                     ↓
+                🖼 a memory
+                     ↓
+                ♡ a sticker
+                     ↓
+                 ✧ a doodle
+                     ↓
+               ✦ a shape
+                     ↓
+            "okay... that's cute"
+                     ↓
                another idea
 ```
 
-And that's perfectly okay.
-
-**The mess is part of the process.**
+**You bring the thought. You decide where it goes. The canvas does the rest.** ♡
 
 ---
 
-# 🌸 Core Highlights
+# ⚡ Core Features
 
-|                               |                                                                                                   |
-| ----------------------------- | ------------------------------------------------------------------------------------------------- |
-| ### 📓 **Creative Notebooks** | Build personal notebooks with scrapbook-inspired covers, paper styles and collections.            |
-| ### 🪐 **Infinite Canvas**    | Freely position, resize, rotate and organize objects across an expansive workspace.               |
-| ### ✏️ **Drawing Studio**     | Draw directly on the canvas using mouse, touch or stylus.                                         |
-| ### 🧸 **Stickers**           | Add expressive stickers and decorative elements to make every page personal.                      |
-| ### 🖼️ **Image Frames**      | Give images scrapbook-inspired frames such as polaroid, paper, film, tape and torn styles.        |
-| ### 🖍️ **Highlights**        | Highlight and underline important text using soft pastel treatments.                              |
-| ### 📄 **Paper Styles**       | Blank, dotted, grid, lined and aesthetic paper backgrounds.                                       |
-| ### 💾 **Local Persistence**  | Notebook data is stored locally using IndexedDB.                                                  |
-| ### 📱 **Touch Friendly**     | Designed around modern pointer interactions, touch gestures and stylus input.                     |
-| ### 🎨 **Personalization**    | Typography, colors, decorations and layout are designed to feel expressive rather than corporate. |
+### 📓 Notebook Library
+Create notebooks with titles, cover colors, favorites, archive state and dedicated canvas documents.
 
----
+### 🪐 Infinite Canvas
+A camera-based world coordinate system supports pan, wheel/pinch zoom, zoom-at-point and fit-to-content behavior. The camera supports `0.1×`–`4×` zoom.
 
-# 🧸 Creative Toolkit
-
-## ✎ Text
-
-Create and style text objects directly on your canvas.
-
-Control things like:
-
-* Font family
-* Font size
-* Font weight
-* Alignment
-* Color
-* Highlight
-* Underline
-* Position
-* Rotation
-* Layer
-
----
-
-## 🎨 Drawing
-
-The **Draw** mode transforms the canvas into a freehand sketchbook.
-
-### Supported
+### ✎ Rich Text
+Text objects support font family, size, weight, bold, italic, underline, strikethrough, color, background, highlights, alignment, letter spacing, line height and heading styles.
 
 ```text
-✎ Pen / Pencil
-🎨 Color
-📏 Stroke Width
-🌫 Opacity
-🖱 Mouse
-👆 Touch
-✍️ Stylus
+H1 · H2 · H3 · Body · Quote · Handwritten · Caption
 ```
 
-Drawing strokes are represented as SVG paths and can participate in the same canvas object system.
+### 📝 Notes
+Lightweight sticky-note objects for visual, low-friction writing.
+
+### 🎨 Drawing Studio
+SVG-path drawing with pencil, ballpoint, fountain, marker, highlighter, brush and eraser tools, plus stroke color, width, opacity, line caps and joins.
+
+### 🖼️ Images & Scrapbook Frames
+Image objects support:
+
+- Polaroid / Paper / Tape / Film / Torn frames
+- Captions
+- Opacity, borders and shadows
+- Grayscale / Warm / Cool / Fade / Vivid filters
+- Brightness, contrast and saturation
+- Horizontal / vertical flip
+- Crop coordinates
+
+### 🧸 Stickers & Decorations
+Symbols, emojis and decorative elements can be positioned, resized, rotated, layered, locked, hidden and deleted like other canvas objects.
+
+### ✦ SVG Shapes
+Rectangle, circle, rounded rectangle, triangle, star, line, arrow, speech bubble and divider.
+
+### 🎨 Creative Studios
+Focused editing surfaces include **Colour Studio, Font Studio, Image Edit Panel, Drawing Panel, Emoji Studio, Decorations Drawer, Alignment Toolbar, Layer Panel, Quick Create, Template Gallery, Saved Elements** and **Keyboard Shortcuts**.
+
+### 📄 Paper Collection
+```text
+Blank · Dotted · Grid · Lined · Paper · Pink · Lavender · Sage · Sky
+```
 
 ---
 
-## 🖼️ Images
+# 🧠 Data Model
 
-Images aren't treated as boring rectangles.
-
-They can become part of the scrapbook.
-
-### Frame styles
+The typed domain model is centered on a shared `CanvasObjectBase`:
 
 ```text
-♡ Polaroid
-♡ Paper
-♡ Tape
-♡ Film
-♡ Torn
-♡ Plain
+CanvasObjectBase
+│
+├── Text
+├── Note
+├── Image
+├── Drawing
+├── Sticker
+└── Shape
 ```
 
-And just like other canvas objects:
-
-**Move · Resize · Rotate · Layer · Lock**
-
----
-
-## 🧸 Stickers & Decorations
-
-Add personality with decorative elements.
-
-Objects can be:
-
-**Moved → Resized → Rotated → Layered → Locked → Deleted**
-
-So you can create everything from:
+Common object metadata includes:
 
 ```text
-        ✎ Study Notes
-             +
-          🖼 Photos
-             +
-          ♡ Stickers
-             +
-          ✧ Doodles
-             +
-        📎 Decorations
+id · x · y · width · height · rotation · zIndex
+locked · hidden · createdAt · updatedAt · groupId · label
 ```
 
-to a completely chaotic digital scrapbook.
-
-Both are valid.
+Specialized object data covers text styling, image transforms, SVG drawings, stickers and shape configuration.
 
 ---
 
-# 📄 Paper Collection
+# 💾 Local-First Storage
 
-Set the atmosphere before you even start.
-
-### Available canvas styles
-
-| Style       | Mood           |
-| ----------- | -------------- |
-| 🤍 Blank    | Minimal        |
-| ⠿ Dotted    | Bullet journal |
-| ▦ Grid      | Structured     |
-| ─ Lined     | Notebook       |
-| 📜 Paper    | Scrapbook      |
-| 🌸 Blush    | Soft           |
-| 💜 Lavender | Dreamy         |
-| 🌿 Sage     | Calm           |
-| ☁️ Sky      | Airy           |
-
----
-
-# 🎨 Design System
-
-As You Wish follows a soft editorial + scrapbook visual language.
-
-### Typography
-
-**DM Sans**
-
-Primary interface typography.
-
-**Fraunces**
-
-Editorial / expressive typography.
-
-**Caveat**
-
-Handwritten accents and creative moments.
-
-### Visual language
+The core app uses **IndexedDB** through `idb`, with database name `as-you-wish` and schema version `2`.
 
 ```text
-       warm paper
-            +
-       pastel colors
-            +
-      editorial serif
-            +
-     handwritten notes
-            +
-       scrapbook tape
-            +
-        soft shadows
-            +
-        playful icons
+┌──────────────────────────────┐
+│         IndexedDB            │
+├──────────────────────────────┤
+│ notebooks                    │
+│   └── by-updatedAt            │
+│                              │
+│ canvases                     │
+│   └── by-notebookId           │
+│                              │
+│ userPrefs                    │
+│   └── singleton preferences   │
+└──────────────────────────────┘
 ```
 
-### Design goal
+Preferences include recent/favorite colors, saved palettes, favorite/recent fonts and saved elements. Deleting a notebook also removes its associated canvas documents.
 
-> **Professional enough to use.
-> Cute enough to love.**
-
----
-
-# 🛠️ Technology Stack
-
-<div align="center">
-
-![React](https://skillicons.dev/icons?i=react)
-![TypeScript](https://skillicons.dev/icons?i=typescript)
-![Vite](https://skillicons.dev/icons?i=vite)
-![CSS](https://skillicons.dev/icons?i=css)
-![HTML](https://skillicons.dev/icons?i=html)
-![Git](https://skillicons.dev/icons?i=git)
-![GitHub](https://skillicons.dev/icons?i=github)
-
-</div>
-
-| Technology             | Purpose                                        |
-| ---------------------- | ---------------------------------------------- |
-| ⚛️ **React 19**        | UI and component architecture                  |
-| 🟦 **TypeScript**      | Type safety and maintainable application logic |
-| ⚡ **Vite**             | Development server and production bundling     |
-| 🐻 **Zustand**         | Lightweight application state management       |
-| 💾 **IndexedDB**       | Local notebook persistence                     |
-| 📦 **idb**             | Promise-based IndexedDB interface              |
-| 🎨 **CSS3**            | Design system, layouts and animations          |
-| 🖼️ **SVG**            | Drawing and custom interface icons             |
-| 🖱️ **Pointer Events** | Unified mouse, touch and stylus interaction    |
-| 🌐 **HTML5**           | Application structure                          |
-| 🔧 **Git**             | Version control                                |
-| 🐙 **GitHub**          | Source control and collaboration               |
-| ⚙️ **GitHub Actions**  | CI/CD and deployment workflow                  |
-| 🌐 **GitHub Pages**    | Application hosting                            |
-
----
-
-# 📊 Language Composition
-
-![Top Languages](https://github-readme-stats.vercel.app/api/top-langs/?username=chillingbing648-sketch\&repo=As-you-wish\&layout=donut\&theme=transparent\&hide_border=true)
-
-*Automatically generated from the repository's current source composition.*
+> **The core notebook experience does not require a remote database.**
 
 ---
 
 # 🏗️ Architecture
 
 ```text
-                         ┌──────────────────────┐
-                         │     AS YOU WISH      │
-                         │    React + Vite      │
-                         └───────────┬──────────┘
+                         ┌───────────────────────┐
+                         │      AS YOU WISH      │
+                         │     React + Vite      │
+                         └───────────┬───────────┘
                                      │
-               ┌─────────────────────┼─────────────────────┐
-               │                     │                     │
-               ▼                     ▼                     ▼
-       ┌───────────────┐     ┌───────────────┐     ┌───────────────┐
-       │   Library     │     │    Canvas     │     │    Editor     │
-       │   Notebooks   │     │   Workspace   │     │    Tools      │
-       └───────┬───────┘     └───────┬───────┘     └───────────────┘
-               │                     │
-               │                     │
-               ▼                     ▼
-       ┌───────────────┐     ┌───────────────┐
-       │    Zustand    │     │ Canvas Objects│
-       │    State      │     │               │
-       └───────┬───────┘     └───────┬───────┘
-               │                     │
-               └──────────┬──────────┘
-                          ▼
-                 ┌─────────────────┐
-                 │   IndexedDB     │
-                 │ Local Persistence│
-                 └─────────────────┘
+            ┌────────────────────────┼────────────────────────┐
+            │                        │                        │
+            ▼                        ▼                        ▼
+     ┌──────────────┐        ┌──────────────┐        ┌──────────────┐
+     │ Components   │        │ Canvas Layer │        │ Zustand      │
+     │ Library / UI │        │ Camera/Object│        │ Stores       │
+     └──────┬───────┘        └──────┬───────┘        └──────┬───────┘
+            │                       │                       │
+            └───────────────────────┼───────────────────────┘
+                                    ▼
+                           ┌─────────────────┐
+                           │  Typed Domain   │
+                           │     Models      │
+                           └────────┬────────┘
+                                    ▼
+                           ┌─────────────────┐
+                           │ IndexedDB / idb │
+                           └─────────────────┘
+```
+
+### 🚀 Interaction performance
+
+Pan, wheel and pinch gestures update the camera imperatively on the DOM during the active interaction, then synchronize the final camera state to Zustand after the gesture settles. This avoids unnecessary React renders on every high-frequency input event.
+
+```text
+Pointer / Touch / Wheel
+          ↓
+   Imperative Camera
+          ↓
+     DOM Transform
+          ↓
+    Gesture Settles
+          ↓
+    Zustand Commit
+          ↓
+      IndexedDB
 ```
 
 ---
 
-# 🧠 Canvas Architecture
+# 🛠️ Technology Stack
 
-The editor uses a **world-based DOM canvas** with independently managed objects.
+| Technology | Purpose |
+|---|---|
+| ⚛️ **React 19** | UI and component architecture |
+| 🟦 **TypeScript 6** | Type-safe application and domain models |
+| ⚡ **Vite 8** | Development server and production build |
+| 🐻 **Zustand 5** | Lightweight application state |
+| 💾 **idb 8** | IndexedDB persistence layer |
+| 🎨 **CSS** | Visual system and responsive UI |
+| 🖼️ **SVG** | Drawing, shapes and iconography |
+| 🔍 **Oxlint** | Fast linting |
+| 📦 **gh-pages** | Optional manual deployment script |
+| ⚙️ **GitHub Actions** | Automated production deployment |
+| 🌐 **GitHub Pages** | Hosting |
 
-```text
-                         CANVAS
-                           │
-                    World Container
-                           │
-          ┌────────────────┼────────────────┐
-          │                │                │
-          ▼                ▼                ▼
-        TEXT             IMAGE           STICKER
-          │                │                │
-          └────────────────┼────────────────┘
-                           │
-                           ▼
-                     SVG DRAWINGS
-```
-
-Each canvas object can maintain properties such as:
-
-```text
-Position
-Size
-Rotation
-Layer
-Lock State
-Content
-Styling
-```
-
-This makes the workspace composable rather than treating the entire page as one flat image.
+Versions reflect the repository's current `package.json`.
 
 ---
 
-# ⚡ Interaction Architecture
-
-Gesture-heavy interactions are optimized to avoid unnecessary state updates.
-
-```text
-             User Interaction
-                    │
-          ┌─────────┴─────────┐
-          ▼                   ▼
-       Dragging            Drawing
-          │                   │
-          ▼                   ▼
-     Direct DOM          SVG Path
-       Update             Update
-          │                   │
-          └─────────┬─────────┘
-                    ▼
-             Gesture Finished
-                    │
-                    ▼
-              State Commit
-                    │
-                    ▼
-                 Zustand
-                    │
-                    ▼
-                IndexedDB
-```
-
-This architecture helps keep canvas interactions responsive while preserving application state correctly.
-
----
-
-# 📱 Interaction Support
-
-## 🖱 Desktop
-
-* Mouse selection
-* Dragging
-* Resizing
-* Rotation
-* Zoom
-* Pan
-* Marquee selection
-
-## 👆 Touch
-
-* Touch dragging
-* Two-finger pan
-* Pinch zoom
-* Larger interaction targets
-
-## ✍️ Stylus
-
-* Freehand drawing
-* Pointer-based interaction
-* Tablet-oriented workflow
-
-### Recommended setup
-
-```text
-Tablet
-  +
-Stylus
-  +
-As You Wish
-  =
-♡ dangerously cute productivity ♡
-```
-
----
-
-# 🧩 Project Structure
+# 📁 Project Structure
 
 ```text
 As-you-wish/
 │
-├── .github/
-│   └── workflows/
-│
-├── public/
-│   ├── favicon.svg
-│   └── preview.png
+├── .github/workflows/deploy.yml
+├── assets/as-you-wish-header.svg
+├── public/favicon.svg
 │
 ├── src/
-│   │
 │   ├── canvas/
+│   │   ├── AlignmentToolbar.tsx
 │   │   ├── Canvas.tsx
 │   │   ├── CanvasObjectNode.tsx
-│   │   ├── AlignmentToolbar.tsx
-│   │   ├── ContextToolbar.tsx
 │   │   ├── ColourStudio.tsx
+│   │   ├── ContextToolbar.tsx
 │   │   ├── DecorationsDrawer.tsx
 │   │   ├── DrawingPanel.tsx
 │   │   ├── EmojiStudio.tsx
@@ -524,100 +293,75 @@ As-you-wish/
 │   │
 │   ├── lib/
 │   │   ├── db.ts
-│   │   └── fontCatalog.ts
+│   │   ├── fontCatalog.ts
+│   │   └── fontLoader.ts
+│   │
+│   ├── store/
+│   │   ├── canvasStore.ts
+│   │   ├── notebookStore.ts
+│   │   └── prefsStore.ts
 │   │
 │   ├── styles/
-│   │   ├── tokens.css
-│   │   └── app.css
+│   │   ├── app.css
+│   │   └── tokens.css
 │   │
+│   ├── types/index.ts
 │   ├── App.tsx
-│   └── ...
+│   └── main.tsx
 │
+├── Preview.png
 ├── index.html
 ├── package.json
 ├── package-lock.json
+├── tsconfig.json
+├── tsconfig.app.json
+├── tsconfig.node.json
 └── vite.config.ts
 ```
 
 ---
 
-# 💾 Data Persistence
+# 🔄 CI/CD & Deployment
 
-As You Wish uses browser-local storage architecture through:
-
-### **IndexedDB + idb**
-
-The notebook model is persisted locally, allowing the application to maintain data across sessions without requiring a traditional backend for its core notebook workflow.
+The repository contains a GitHub Actions workflow that runs on pushes to `main` and supports manual dispatch.
 
 ```text
-User
- │
- ▼
-Notebook
- │
- ├── Pages
- │
- ├── Canvas Objects
- │      ├── Text
- │      ├── Image
- │      ├── Sticker
- │      ├── Shape
- │      └── Drawing
- │
- ▼
-IndexedDB
+Developer
+   ↓
+git push → main
+   ↓
+GitHub Actions
+   ├─ Checkout
+   ├─ Node.js 20
+   ├─ npm ci
+   ├─ npm run build
+   ├─ Configure Pages
+   └─ Upload dist artifact
+             ↓
+      GitHub Pages Deploy
+             ↓
+          🌐 LIVE
 ```
 
 ---
 
-# 🔐 Privacy Philosophy
-
-The core notebook experience is designed around **local-first persistence**.
-
-There is no requirement for a cloud database just to create and maintain the basic notebook experience.
-
-Your notes belong to your browser.
-
-Your doodles belong to you.
-
-Your questionable sticker choices are also between you and your browser. 🫶
-
----
-
-# 🚀 Run Locally
-
-### 1 · Clone
+# 💻 Run Locally
 
 ```bash
 git clone https://github.com/chillingbing648-sketch/As-you-wish.git
 cd As-you-wish
-```
-
-### 2 · Install
-
-```bash
 npm install
-```
-
-### 3 · Start Development
-
-```bash
 npm run dev
 ```
 
-### 4 · Build
+### Production build
 
 ```bash
 npm run build
-```
-
-### 5 · Preview Production
-
-```bash
 npm run preview
 ```
 
-### 6 · Lint
+### Lint
 
 ```bash
 npm run lint
@@ -625,181 +369,109 @@ npm run lint
 
 ---
 
-# ☁️ Deployment
-
-The application is designed for static deployment.
-
-```text
-Developer
-    │
-    ▼
-Git Push
-    │
-    ▼
-GitHub
-    │
-    ▼
-GitHub Actions
-    │
-    ▼
-Vite Build
-    │
-    ▼
-GitHub Pages
-    │
-    ▼
-🌐 LIVE
-```
-
-### Live Application
-
-<div align="center">
-
-[![Open As You Wish](https://img.shields.io/badge/🎀%20OPEN%20AS%20YOU%20WISH-F7C8D0?style=for-the-badge)](https://chillingbing648-sketch.github.io/As-you-wish/)
-
-</div>
-
----
-
 # 📈 Engineering Status
 
-| Area                    | Status |
-| ----------------------- | :----: |
-| React Architecture      |   🟢   |
-| Component Structure     |   🟢   |
-| Infinite Canvas         |   🟢   |
-| Canvas Gestures         |   🟢   |
-| Text Objects            |   🟢   |
-| Image Objects           |   🟢   |
-| Drawing                 |   🟢   |
-| Stickers                |   🟢   |
-| Image Frames            |   🟢   |
-| Local Persistence       |   🟢   |
-| Touch Interaction       |   🟢   |
-| Stylus Interaction      |   🟢   |
-| Responsive UI           |   🟢   |
-| Production Build        |   🟢   |
-| GitHub Deployment       |   🟢   |
-| Automated Testing       |   🟡   |
-| Accessibility Hardening |   🟡   |
-| Advanced Export         |   🟡   |
+| Area | Status |
+|---|:---:|
+| React 19 Architecture | 🟢 |
+| TypeScript Domain Model | 🟢 |
+| Notebook Library | 🟢 |
+| Infinite Canvas | 🟢 |
+| Camera / Zoom / Pan | 🟢 |
+| Rich Text | 🟢 |
+| Notes | 🟢 |
+| Images & Frames | 🟢 |
+| Drawing | 🟢 |
+| Stickers / Emojis | 🟢 |
+| SVG Shapes | 🟢 |
+| Layers / Lock / Hide | 🟢 |
+| Saved Elements | 🟢 |
+| IndexedDB Persistence | 🟢 |
+| Preferences | 🟢 |
+| Production Build | 🟢 |
+| GitHub Pages Deployment | 🟢 |
+| Automated Tests | 🟡 |
+| Accessibility Hardening | 🟡 |
+| Advanced Export / Import | 🟡 |
 
-### Current Stage
-
-**MVP / Active Creative Development**
+**Current stage:** MVP / Active Creative Development
 
 ---
 
 # 🗺️ Roadmap
 
-## ✓ Completed
+### ✓ Built
 
-* [x] Creative notebook library
-* [x] Infinite canvas
-* [x] Canvas object system
-* [x] Text editing
-* [x] Image objects
-* [x] Image frames
-* [x] Stickers
-* [x] Drawing
-* [x] Highlights
-* [x] Underlines
-* [x] Multiple paper styles
-* [x] Layer management
-* [x] Object locking
-* [x] Touch interactions
-* [x] Local persistence
-* [x] Responsive editor
+- [x] Notebook library
+- [x] Infinite canvas + camera system
+- [x] Rich text and notes
+- [x] Images + scrapbook frames
+- [x] Image filters, transforms and crop model
+- [x] Drawing tools
+- [x] Stickers / emojis / decorations
+- [x] SVG shapes
+- [x] Layers, locking and visibility
+- [x] Color palettes and font preferences
+- [x] Templates and saved elements
+- [x] IndexedDB persistence
+- [x] GitHub Pages deployment
 
-## → Coming Next
+### → Next
 
-* [ ] 🧽 Eraser tool
-* [ ] ✂️ Advanced image cropping
-* [ ] 🎞️ Image filters
-* [ ] 🧸 Expanded sticker library
-* [ ] 📦 User-uploaded stickers
-* [ ] 🎨 Saved custom themes
-* [ ] 📋 Clipboard-smart paste
-* [ ] ⌘K / Ctrl+K command palette
-* [ ] 📤 Export / Import
-* [ ] 💾 Backup & restore
-* [ ] 🌙 Dark mode
-* [ ] 📱 Further mobile optimization
-* [ ] ♿ Accessibility hardening
-* [ ] 🧪 Automated testing
-* [ ] 📊 Observability
-
----
-
-# 🧪 Development Principles
-
-### 01 · Creativity First
-
-The interface should disappear when you're creating.
-
-### 02 · Objects Stay Flexible
-
-Text, images, drawings and decorations should behave consistently.
-
-### 03 · Local Where Possible
-
-Core notebook persistence should not require unnecessary infrastructure.
-
-### 04 · Performance Matters
-
-Interactions should feel immediate, especially while dragging, drawing and zooming.
-
-### 05 · Cute ≠ Unprofessional
-
-A playful interface can still have thoughtful architecture.
-
-### 06 · Make It Yours
-
-The best canvas is the one that doesn't tell you how to use it.
+- [ ] 🧪 Automated component / interaction tests
+- [ ] 📤 Export / import workflows
+- [ ] 💾 Backup / restore
+- [ ] 📦 User-uploaded asset collections
+- [ ] 🧽 Expanded drawing tools
+- [ ] 🎞️ Expanded image editing
+- [ ] 🌙 Dark theme
+- [ ] ♿ Accessibility hardening
+- [ ] 📱 Further mobile optimization
 
 ---
 
 # 🤝 Contributing
 
-Have an idea?
-
-Found a bug?
-
-Want to make the canvas even cuter?
-
-You're welcome here. ♡
-
 ```bash
 git checkout -b feature/my-feature
-
 npm install
-
 npm run dev
-
 npm run build
-
+npm run lint
 git add .
-
 git commit -m "feat: describe your change"
-
 git push origin feature/my-feature
 ```
 
 Then open a Pull Request.
 
+### Contribution principles
+
+- Keep components focused and reusable.
+- Preserve the typed domain model.
+- Keep persisted fields backward-compatible where possible.
+- Avoid unnecessary React re-renders in gesture-heavy paths.
+- Keep the visual language cohesive.
+- Verify the production build before opening a PR.
+
 ---
 
-# 🐛 Issues & Suggestions
+# 🔐 Privacy & Storage Philosophy
 
-Found something broken?
+The core notebook and canvas data layer is **local-first and browser-based**. Notebooks, canvas documents and preferences are persisted through IndexedDB rather than requiring a cloud backend for the core editing experience.
 
-Have an idea?
-
-Want another sticker because **one more sticker will definitely solve everything?**
-
-Open an issue:
-
-[![Open Issue](https://img.shields.io/badge/🐛%20OPEN%20AN%20ISSUE-181717?style=for-the-badge\&logo=github)](https://github.com/chillingbing648-sketch/As-you-wish/issues)
+```text
+Your Browser
+     ↓
+As You Wish
+     ↓
+IndexedDB
+ ┌───────────────┐
+ │ Notebooks     │
+ │ Canvas Docs   │
+ │ Preferences   │
+ └───────────────┘
+```
 
 ---
 
@@ -813,42 +485,22 @@ Please refer to the repository's license information for the applicable licensin
 
 <div align="center">
 
-|                          |                                                                                                  |
-| ------------------------ | ------------------------------------------------------------------------------------------------ |
-| 🌐 **Live Application**  | [Open As You Wish](https://chillingbing648-sketch.github.io/As-you-wish/)                        |
-| 💻 **GitHub Repository** | [View Source](https://github.com/chillingbing648-sketch/As-you-wish)                             |
-| 🐛 **Issues**            | [Report a Bug / Suggest a Feature](https://github.com/chillingbing648-sketch/As-you-wish/issues) |
+[![Open Live App](https://img.shields.io/badge/🌐%20OPEN%20LIVE%20APP-F7C8D0?style=for-the-badge)](https://chillingbing648-sketch.github.io/As-you-wish/)
+[![View GitHub](https://img.shields.io/badge/💻%20VIEW%20GITHUB-181717?style=for-the-badge&logo=github)](https://github.com/chillingbing648-sketch/As-you-wish)
+[![Issues](https://img.shields.io/badge/🐛%20ISSUES-CEC4E8?style=for-the-badge)](https://github.com/chillingbing648-sketch/As-you-wish/issues)
 
-</div>
-
----
-
-<div align="center">
-
-![Footer](https://capsule-render.vercel.app/api?type=waving\&color=BFD8C2,CEC4E8,F7C8D0\&height=140\&section=footer\&text=As%20You%20Wish\&fontSize=32\&fontColor=ffffff\&animation=fadeIn)
+<br><br>
 
 ### ˚₊‧꒰ა ♡ ໒꒱ ‧₊˚
 
 **Create Freely. Arrange Beautifully. Make It Yours.**
 
-<br/>
-
 `♡` `✦` `୨୧` `✎` `🎀` `🌷` `🧸` `✨`
 
-<br/>
+<sub>Built with React · TypeScript · Vite · Zustand · IndexedDB</sub>
 
-<sub>
+<br>
 
-Built with React · TypeScript · Vite · Zustand · IndexedDB
-
-</sub>
-
-<br/>
-
-<sub>
-
-*made with an unreasonable amount of love & a suspicious amount of pastel*
-
-</sub>
+<sub><i>professional architecture, soft edges, and a suspicious amount of pastel.</i></sub>
 
 </div>
