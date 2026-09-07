@@ -3,7 +3,7 @@
 // as new CanvasObjectBase variants, so old stored objects keep loading —
 // every new field is optional and every reader supplies a sensible default.
 
-export type ObjectType = 'text' | 'image' | 'note' | 'drawing' | 'sticker' | 'shape';
+export type ObjectType = 'text' | 'image' | 'note' | 'drawing' | 'sticker' | 'shape' | 'gif';
 
 export type ShapeType =
   | 'rect'
@@ -59,7 +59,6 @@ export interface TextObjectData {
   headingStyle?: HeadingStyle;
   fontWeight?: number;
 }
-
 
 export interface NoteObjectData {
   text: string;
@@ -122,13 +121,26 @@ export interface ShapeObjectData {
   arrowEnd?: boolean;
 }
 
+export interface GifObjectData {
+  src: string;
+  name?: string;
+  source: 'created' | 'uploaded' | 'external';
+  naturalWidth: number;
+  naturalHeight: number;
+  loop?: boolean;
+  duration?: number;
+  gifId?: string;
+  sourceUrl?: string;
+}
+
 export type CanvasObject =
   | (CanvasObjectBase & { type: 'text'; data: TextObjectData })
   | (CanvasObjectBase & { type: 'note'; data: NoteObjectData })
   | (CanvasObjectBase & { type: 'image'; data: ImageObjectData })
   | (CanvasObjectBase & { type: 'drawing'; data: DrawingObjectData })
   | (CanvasObjectBase & { type: 'sticker'; data: StickerObjectData })
-  | (CanvasObjectBase & { type: 'shape'; data: ShapeObjectData });
+  | (CanvasObjectBase & { type: 'shape'; data: ShapeObjectData })
+  | (CanvasObjectBase & { type: 'gif'; data: GifObjectData });
 
 export type CanvasBackground =
   | 'blank' | 'dotted' | 'grid' | 'lined' | 'paper'
