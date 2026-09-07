@@ -4,6 +4,7 @@ import { NotebookEditor } from './components/NotebookEditor';
 import type { Notebook } from './types';
 import './styles/tokens.css';
 import './styles/app.css';
+import './styles/gif.css';
 
 export default function App() {
   const [activeNotebook, setActiveNotebook] = useState<Notebook | null>(null);
