@@ -1,5 +1,6 @@
 import { openDB, type DBSchema, type IDBPDatabase } from 'idb';
 import type { CanvasDoc, Notebook, UserPrefs } from '../types';
+import type { StoredGif } from '../gif/types';
 
 interface AsYouWishDB extends DBSchema {
   notebooks: {
@@ -16,10 +17,15 @@ interface AsYouWishDB extends DBSchema {
     key: string;
     value: UserPrefs;
   };
+  gifs: {
+    key: string;
+    value: StoredGif;
+    indexes: { 'by-updatedAt': number };
+  };
 }
 
 const DB_NAME = 'as-you-wish';
-const DB_VERSION = 2; // v2 adds userPrefs store
+const DB_VERSION = 3;
 
 let dbPromise: Promise<IDBPDatabase<AsYouWishDB>> | null = null;
 
@@ -37,6 +43,10 @@ function getDB() {
         }
         if (oldVersion < 2 && !db.objectStoreNames.contains('userPrefs')) {
           db.createObjectStore('userPrefs', { keyPath: 'id' });
+        }
+        if (oldVersion < 3 && !db.objectStoreNames.contains('gifs')) {
+          const store = db.createObjectStore('gifs', { keyPath: 'id' });
+          store.createIndex('by-updatedAt', 'updatedAt');
         }
       },
     });
@@ -112,4 +122,27 @@ export async function getUserPrefs(): Promise<UserPrefs> {
 export async function putUserPrefs(prefs: UserPrefs): Promise<void> {
   const db = await getDB();
   await db.put('userPrefs', prefs);
+}
+
+// ---- GIFs ----
+
+export async function listGifs(): Promise<StoredGif[]> {
+  const db = await getDB();
+  const all = await db.getAll('gifs');
+  return all.sort((a, b) => b.updatedAt - a.updatedAt);
+}
+
+export async function getGif(id: string): Promise<StoredGif | undefined> {
+  const db = await getDB();
+  return db.get('gifs', id);
+}
+
+export async function putGif(gif: StoredGif): Promise<void> {
+  const db = await getDB();
+  await db.put('gifs', gif);
+}
+
+export async function deleteGif(id: string): Promise<void> {
+  const db = await getDB();
+  await db.delete('gifs', id);
 }
