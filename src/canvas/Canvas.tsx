@@ -6,7 +6,7 @@ import { CanvasObjectNode } from './CanvasObjectNode';
 import type { CanvasObject } from '../types';
 
 interface MarqueeState {
-  startX: number; // screen coords
+  startX: number;
   startY: number;
   x: number;
   y: number;
@@ -15,334 +15,719 @@ interface MarqueeState {
   additive: boolean;
 }
 
-function pointsToPath(points: { x: number; y: number }[]) {
+type Point = {
+  x: number;
+  y: number;
+};
+
+function pointsToPath(points: Point[]) {
   if (points.length === 0) return '';
-  return points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(' ');
+
+  return points
+    .map((point, index) => {
+      return `${index === 0 ? 'M' : 'L'} ${point.x.toFixed(1)} ${point.y.toFixed(1)}`;
+    })
+    .join(' ');
 }
 
-function pointsToSmoothedPath(points: { x: number; y: number }[]) {
-  if (points.length <= 2) return pointsToPath(points);
-  let d = `M ${points[0].x.toFixed(1)} ${points[0].y.toFixed(1)}`;
-  for (let i = 1; i < points.length - 1; i++) {
-    const xc = (points[i].x + points[i + 1].x) / 2;
-    const yc = (points[i].y + points[i + 1].y) / 2;
-    d += ` Q ${points[i].x.toFixed(1)} ${points[i].y.toFixed(1)}, ${xc.toFixed(1)} ${yc.toFixed(1)}`;
+function pointsToSmoothedPath(points: Point[]) {
+  if (points.length <= 2) {
+    return pointsToPath(points);
   }
-  const last = points[points.length - 1];
-  d += ` L ${last.x.toFixed(1)} ${last.y.toFixed(1)}`;
-  return d;
-}
 
+  let path = `M ${points[0].x.toFixed(1)} ${points[0].y.toFixed(1)}`;
+
+  for (let i = 1; i < points.length - 1; i += 1) {
+    const current = points[i];
+    const next = points[i + 1];
+
+    const controlX = current.x;
+    const controlY = current.y;
+
+    const endX = (current.x + next.x) / 2;
+    const endY = (current.y + next.y) / 2;
+
+    path += ` Q ${controlX.toFixed(1)} ${controlY.toFixed(1)}, ${endX.toFixed(1)} ${endY.toFixed(1)}`;
+  }
+
+  const last = points[points.length - 1];
+
+  path += ` L ${last.x.toFixed(1)} ${last.y.toFixed(1)}`;
+
+  return path;
+}
 
 export function Canvas() {
-  const doc = useCanvasStore((s) => s.doc);
-  const selectedIds = useCanvasStore((s) => s.selectedIds);
-  const setSelection = useCanvasStore((s) => s.setSelection);
-  const clearSelection = useCanvasStore((s) => s.clearSelection);
-  const addObject = useCanvasStore((s) => s.addObject);
-  const activeTool = useCanvasStore((s) => s.activeTool);
-  const setTool = useCanvasStore((s) => s.setTool);
-  const drawSettings = useCanvasStore((s) => s.drawSettings);
+  const doc = useCanvasStore((state) => state.doc);
+  const selectedIds = useCanvasStore((state) => state.selectedIds);
+  const setSelection = useCanvasStore((state) => state.setSelection);
+  const clearSelection = useCanvasStore((state) => state.clearSelection);
+  const addObject = useCanvasStore((state) => state.addObject);
+  const activeTool = useCanvasStore((state) => state.activeTool);
+  const drawSettings = useCanvasStore((state) => state.drawSettings);
 
   const viewportRef = useRef<HTMLDivElement | null>(null);
   const worldRef = useRef<HTMLDivElement | null>(null);
-  const { camera, init, panBy, zoomAt, setZoom, screenToWorld, fitToObjects, subscribeZoom } = useCamera(worldRef);
+
+  const {
+    camera,
+    init,
+    panBy,
+    zoomAt,
+    setZoom,
+    screenToWorld,
+    fitToObjects,
+    subscribeZoom,
+  } = useCamera(worldRef);
+
   const gesture = useObjectGesture();
 
   const [marquee, setMarquee] = useState<MarqueeState | null>(null);
+
   const isPanning = useRef(false);
   const lastPanPos = useRef({ x: 0, y: 0 });
   const spacePressed = useRef(false);
-  const pinchState = useRef<{ dist: number; centerX: number; centerY: number } | null>(null);
-  const activePointers = useRef<Map<number, { x: number; y: number }>>(new Map());
 
-  // Freehand drawing state lives entirely in refs. Points accumulate as the
-  // stylus/finger/mouse moves, but the SVG <path> element is only touched
-  // via a rAF-batched setAttribute — never React state — so a fast stylus
-  // stream never triggers a React render mid-stroke. The stroke becomes a
-  // single CanvasObject (one store write, one persistence write) on lift.
+  const pinchState = useRef<{
+    dist: number;
+    centerX: number;
+    centerY: number;
+  } | null>(null);
+
+  const activePointers = useRef<Map<number, Point>>(new Map());
+
+  /*
+   * Drawing state intentionally lives in refs.
+   *
+   * A pointer/stylus can generate a very large number of move events.
+   * Keeping these points outside React state prevents a React render for
+   * every single movement.
+   *
+   * The preview SVG path is updated through requestAnimationFrame and
+   * the completed stroke is committed to Zustand only once on pointer up.
+   */
   const drawingPathRef = useRef<SVGPathElement | null>(null);
-  const drawingPoints = useRef<{ x: number; y: number }[]>([]);
-  const drawingBounds = useRef({ minX: 0, minY: 0, maxX: 0, maxY: 0 });
+  const drawingPoints = useRef<Point[]>([]);
+  const drawingBounds = useRef({
+    minX: 0,
+    minY: 0,
+    maxX: 0,
+    maxY: 0,
+  });
   const drawingPointerId = useRef<number | null>(null);
   const drawingRaf = useRef<number | null>(null);
 
   const flushDrawingPath = useCallback(() => {
     drawingRaf.current = null;
-    if (drawingPathRef.current) {
-      drawingPathRef.current.setAttribute('d', pointsToPath(drawingPoints.current));
-    }
+
+    const pathElement = drawingPathRef.current;
+
+    if (!pathElement) return;
+
+    pathElement.setAttribute('d', pointsToPath(drawingPoints.current));
   }, []);
 
   const scheduleDrawingFlush = useCallback(() => {
-    if (drawingRaf.current == null) {
-      drawingRaf.current = requestAnimationFrame(flushDrawingPath);
-    }
+    if (drawingRaf.current !== null) return;
+
+    drawingRaf.current = requestAnimationFrame(flushDrawingPath);
   }, [flushDrawingPath]);
 
-  // Initialize camera from doc once on load
+  /*
+   * Initialize the camera once for each loaded document.
+   */
   const initializedFor = useRef<string | null>(null);
+
   useEffect(() => {
-    if (doc && initializedFor.current !== doc.id) {
-      init(doc.camera);
-      initializedFor.current = doc.id;
-    }
+    if (!doc || initializedFor.current === doc.id) return;
+
+    init(doc.camera);
+    initializedFor.current = doc.id;
   }, [doc, init]);
 
-  // Keyboard: space to pan, delete to remove, escape to deselect
+  /*
+   * Keyboard controls:
+   * - Space: temporary pan modifier
+   * - Delete / Backspace: delete selected objects
+   * - Escape: clear selection
+   * - Ctrl/Cmd + D: duplicate selected objects
+   *
+   * Important:
+   * This effect deliberately does NOT modify activeTool.
+   * Doodle mode is controlled by the toolbar/tool system and remains
+   * active until another tool explicitly changes it.
+   */
   useEffect(() => {
-    const onKeyDown = (e: KeyboardEvent) => {
-      const target = e.target as HTMLElement;
-      // More reliable check: use isContentEditable property instead of getAttribute
-      const isEditingText = target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable);
+    const onKeyDown = (event: KeyboardEvent) => {
+      const target = event.target as HTMLElement | null;
+
+      const isEditingText =
+        target &&
+        (
+          target.tagName === 'INPUT' ||
+          target.tagName === 'TEXTAREA' ||
+          target.isContentEditable
+        );
+
       if (isEditingText) return;
 
-      if (e.code === 'Space') spacePressed.current = true;
-      if ((e.key === 'Delete' || e.key === 'Backspace') && selectedIds.length > 0) {
-        e.preventDefault();
+      if (event.code === 'Space') {
+        spacePressed.current = true;
+      }
+
+      if (
+        (event.key === 'Delete' || event.key === 'Backspace') &&
+        selectedIds.length > 0
+      ) {
+        event.preventDefault();
+
         useCanvasStore.getState().deleteObjects(selectedIds);
       }
-      if (e.key === 'Escape') {
+
+      if (event.key === 'Escape') {
         clearSelection();
-        if (activeTool === 'draw') setTool('select');
       }
-      if ((e.metaKey || e.ctrlKey) && e.key === 'd' && selectedIds.length > 0) {
-        e.preventDefault();
+
+      if (
+        (event.metaKey || event.ctrlKey) &&
+        event.key.toLowerCase() === 'd' &&
+        selectedIds.length > 0
+      ) {
+        event.preventDefault();
+
         const currentDoc = useCanvasStore.getState().doc;
+
         if (!currentDoc) return;
+
         selectedIds.forEach((id) => {
-          const src = currentDoc.objects[id];
-          if (!src) return;
+          const source = currentDoc.objects[id];
+
+          if (!source) return;
+
+          const now = Date.now();
+
           const copy: CanvasObject = {
-            ...src,
+            ...source,
             id: crypto.randomUUID(),
-            x: src.x + 24,
-            y: src.y + 24,
-            createdAt: Date.now(),
-            updatedAt: Date.now(),
+            x: source.x + 24,
+            y: source.y + 24,
+            createdAt: now,
+            updatedAt: now,
           };
+
           addObject(copy);
         });
       }
     };
-    const onKeyUp = (e: KeyboardEvent) => {
-      if (e.code === 'Space') spacePressed.current = false;
+
+    const onKeyUp = (event: KeyboardEvent) => {
+      if (event.code === 'Space') {
+        spacePressed.current = false;
+      }
     };
+
     window.addEventListener('keydown', onKeyDown);
     window.addEventListener('keyup', onKeyUp);
+
     return () => {
       window.removeEventListener('keydown', onKeyDown);
       window.removeEventListener('keyup', onKeyUp);
     };
-  }, [selectedIds, clearSelection, addObject, activeTool, setTool]);
+  }, [selectedIds, clearSelection, addObject]);
 
-  // Wheel: zoom (ctrl/cmd + wheel or pinch trackpad) / pan (plain wheel)
+  /*
+   * Wheel:
+   * - Ctrl/Cmd + wheel = zoom around cursor
+   * - Normal wheel = pan
+   */
   const handleWheel = useCallback(
-    (e: React.WheelEvent) => {
-      e.preventDefault();
+    (event: React.WheelEvent) => {
+      event.preventDefault();
+
       const rect = viewportRef.current?.getBoundingClientRect();
-      const px = e.clientX - (rect?.left ?? 0);
-      const py = e.clientY - (rect?.top ?? 0);
-      if (e.ctrlKey || e.metaKey) {
-        const factor = Math.exp(-e.deltaY * 0.01);
-        zoomAt(px, py, factor);
-      } else {
-        panBy(-e.deltaX, -e.deltaY);
+
+      const pointerX = event.clientX - (rect?.left ?? 0);
+      const pointerY = event.clientY - (rect?.top ?? 0);
+
+      if (event.ctrlKey || event.metaKey) {
+        const factor = Math.exp(-event.deltaY * 0.01);
+
+        zoomAt(pointerX, pointerY, factor);
+        return;
       }
+
+      panBy(-event.deltaX, -event.deltaY);
     },
     [zoomAt, panBy],
   );
 
+  /*
+   * Pointer down is deliberately ordered:
+   *
+   * 1. Doodle
+   * 2. Pinch
+   * 3. Pan
+   * 4. Marquee selection
+   */
   const handleViewportPointerDown = useCallback(
-    (e: React.PointerEvent) => {
-      activePointers.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    (event: React.PointerEvent) => {
+      activePointers.current.set(event.pointerId, {
+        x: event.clientX,
+        y: event.clientY,
+      });
 
-      // Drawing tool takes priority over pan/select while active, and only
-      // tracks a single contact point (a second finger while drawing pans
-      // instead, handled by the two-pointer branch below on the next move).
-      if (activeTool === 'draw' && e.button === 0 && activePointers.current.size === 1) {
+      /*
+       * Doodle mode has priority over normal canvas interactions.
+       *
+       * Most importantly, we do NOT change activeTool here.
+       * Once Doodle mode is selected, every new stroke starts here until
+       * another tool explicitly changes activeTool.
+       */
+      if (
+        activeTool === 'draw' &&
+        event.button === 0 &&
+        activePointers.current.size === 1
+      ) {
         const rect = viewportRef.current?.getBoundingClientRect();
-        const p = screenToWorld(e.clientX - (rect?.left ?? 0), e.clientY - (rect?.top ?? 0));
-        drawingPoints.current = [p];
-        drawingBounds.current = { minX: p.x, minY: p.y, maxX: p.x, maxY: p.y };
-        drawingPointerId.current = e.pointerId;
-        (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+
+        const point = screenToWorld(
+          event.clientX - (rect?.left ?? 0),
+          event.clientY - (rect?.top ?? 0),
+        );
+
+        drawingPoints.current = [point];
+
+        drawingBounds.current = {
+          minX: point.x,
+          minY: point.y,
+          maxX: point.x,
+          maxY: point.y,
+        };
+
+        drawingPointerId.current = event.pointerId;
+
+        (event.currentTarget as HTMLElement).setPointerCapture(
+          event.pointerId,
+        );
+
         return;
       }
 
+      /*
+       * Two pointers = pinch zoom.
+       */
       if (activePointers.current.size === 2) {
-        const pts = Array.from(activePointers.current.values());
-        const dist = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
+        const points = Array.from(activePointers.current.values());
+
+        const distance = Math.hypot(
+          points[0].x - points[1].x,
+          points[0].y - points[1].y,
+        );
+
         pinchState.current = {
-          dist,
-          centerX: (pts[0].x + pts[1].x) / 2,
-          centerY: (pts[0].y + pts[1].y) / 2,
+          dist: distance,
+          centerX: (points[0].x + points[1].x) / 2,
+          centerY: (points[0].y + points[1].y) / 2,
         };
+
         isPanning.current = false;
         setMarquee(null);
+
         return;
       }
 
-      const target = e.target as HTMLElement;
+      const target = event.target as HTMLElement;
+
       const isBackground =
-        target === viewportRef.current || target === worldRef.current || target.dataset.canvasBg === 'true';
+        target === viewportRef.current ||
+        target === worldRef.current ||
+        target.dataset.canvasBg === 'true';
+
       if (!isBackground) return;
 
-      if (spacePressed.current || e.button === 1 || e.pointerType === 'touch') {
+      /*
+       * Pan:
+       * - Space + left click
+       * - Middle mouse
+       * - Touch
+       */
+      if (
+        spacePressed.current ||
+        event.button === 1 ||
+        event.pointerType === 'touch'
+      ) {
         isPanning.current = true;
-        lastPanPos.current = { x: e.clientX, y: e.clientY };
+
+        lastPanPos.current = {
+          x: event.clientX,
+          y: event.clientY,
+        };
+
         return;
       }
 
-      // Start marquee selection
+      /*
+       * Otherwise begin marquee selection.
+       */
       const rect = viewportRef.current?.getBoundingClientRect();
-      const x = e.clientX - (rect?.left ?? 0);
-      const y = e.clientY - (rect?.top ?? 0);
-      setMarquee({ startX: x, startY: y, x, y, w: 0, h: 0, additive: e.shiftKey });
+
+      const x = event.clientX - (rect?.left ?? 0);
+      const y = event.clientY - (rect?.top ?? 0);
+
+      setMarquee({
+        startX: x,
+        startY: y,
+        x,
+        y,
+        w: 0,
+        h: 0,
+        additive: event.shiftKey,
+      });
     },
     [activeTool, screenToWorld],
   );
 
   const handleViewportPointerMove = useCallback(
-    (e: React.PointerEvent) => {
-      if (activePointers.current.has(e.pointerId)) {
-        activePointers.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    (event: React.PointerEvent) => {
+      if (activePointers.current.has(event.pointerId)) {
+        activePointers.current.set(event.pointerId, {
+          x: event.clientX,
+          y: event.clientY,
+        });
       }
 
-      if (activeTool === 'draw' && drawingPointerId.current === e.pointerId) {
+      /*
+       * Active doodle stroke.
+       */
+      if (
+        activeTool === 'draw' &&
+        drawingPointerId.current === event.pointerId
+      ) {
         const rect = viewportRef.current?.getBoundingClientRect();
-        const p = screenToWorld(e.clientX - (rect?.left ?? 0), e.clientY - (rect?.top ?? 0));
-        const last = drawingPoints.current[drawingPoints.current.length - 1];
-        // Skip near-duplicate points (sub-pixel jitter) to keep the path
-        // string small without any visible loss of stroke fidelity.
-        if (!last || Math.hypot(p.x - last.x, p.y - last.y) >= 1.2) {
-          drawingPoints.current.push(p);
-          drawingBounds.current.minX = Math.min(drawingBounds.current.minX, p.x);
-          drawingBounds.current.minY = Math.min(drawingBounds.current.minY, p.y);
-          drawingBounds.current.maxX = Math.max(drawingBounds.current.maxX, p.x);
-          drawingBounds.current.maxY = Math.max(drawingBounds.current.maxY, p.y);
+
+        const point = screenToWorld(
+          event.clientX - (rect?.left ?? 0),
+          event.clientY - (rect?.top ?? 0),
+        );
+
+        const lastPoint =
+          drawingPoints.current[drawingPoints.current.length - 1];
+
+        /*
+         * Ignore extremely small movements to prevent unnecessary path
+         * growth from pointer/stylus jitter.
+         */
+        if (
+          !lastPoint ||
+          Math.hypot(
+            point.x - lastPoint.x,
+            point.y - lastPoint.y,
+          ) >= 1.2
+        ) {
+          drawingPoints.current.push(point);
+
+          drawingBounds.current.minX = Math.min(
+            drawingBounds.current.minX,
+            point.x,
+          );
+
+          drawingBounds.current.minY = Math.min(
+            drawingBounds.current.minY,
+            point.y,
+          );
+
+          drawingBounds.current.maxX = Math.max(
+            drawingBounds.current.maxX,
+            point.x,
+          );
+
+          drawingBounds.current.maxY = Math.max(
+            drawingBounds.current.maxY,
+            point.y,
+          );
+
           scheduleDrawingFlush();
         }
+
         return;
       }
 
-      if (activePointers.current.size === 2 && pinchState.current) {
-        const pts = Array.from(activePointers.current.values());
-        const dist = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
-        const centerX = (pts[0].x + pts[1].x) / 2;
-        const centerY = (pts[0].y + pts[1].y) / 2;
+      /*
+       * Pinch zoom + pan.
+       */
+      if (
+        activePointers.current.size === 2 &&
+        pinchState.current
+      ) {
+        const points = Array.from(activePointers.current.values());
+
+        const distance = Math.hypot(
+          points[0].x - points[1].x,
+          points[0].y - points[1].y,
+        );
+
+        const centerX = (points[0].x + points[1].x) / 2;
+        const centerY = (points[0].y + points[1].y) / 2;
+
         const rect = viewportRef.current?.getBoundingClientRect();
-        const factor = dist / pinchState.current.dist;
-        zoomAt(centerX - (rect?.left ?? 0), centerY - (rect?.top ?? 0), factor);
-        panBy(centerX - pinchState.current.centerX, centerY - pinchState.current.centerY);
-        pinchState.current = { dist, centerX, centerY };
+
+        const factor = distance / pinchState.current.dist;
+
+        zoomAt(
+          centerX - (rect?.left ?? 0),
+          centerY - (rect?.top ?? 0),
+          factor,
+        );
+
+        panBy(
+          centerX - pinchState.current.centerX,
+          centerY - pinchState.current.centerY,
+        );
+
+        pinchState.current = {
+          dist: distance,
+          centerX,
+          centerY,
+        };
+
         return;
       }
 
+      /*
+       * Canvas pan.
+       */
       if (isPanning.current) {
-        const dx = e.clientX - lastPanPos.current.x;
-        const dy = e.clientY - lastPanPos.current.y;
-        lastPanPos.current = { x: e.clientX, y: e.clientY };
-        panBy(dx, dy);
+        const deltaX = event.clientX - lastPanPos.current.x;
+        const deltaY = event.clientY - lastPanPos.current.y;
+
+        lastPanPos.current = {
+          x: event.clientX,
+          y: event.clientY,
+        };
+
+        panBy(deltaX, deltaY);
+
         return;
       }
 
+      /*
+       * Marquee selection.
+       */
       if (marquee) {
         const rect = viewportRef.current?.getBoundingClientRect();
-        const x = e.clientX - (rect?.left ?? 0);
-        const y = e.clientY - (rect?.top ?? 0);
-        setMarquee((m) =>
-          m
-            ? {
-                ...m,
-                x: Math.min(m.startX, x),
-                y: Math.min(m.startY, y),
-                w: Math.abs(x - m.startX),
-                h: Math.abs(y - m.startY),
-              }
-            : m,
-        );
+
+        const x = event.clientX - (rect?.left ?? 0);
+        const y = event.clientY - (rect?.top ?? 0);
+
+        setMarquee((current) => {
+          if (!current) return current;
+
+          return {
+            ...current,
+            x: Math.min(current.startX, x),
+            y: Math.min(current.startY, y),
+            w: Math.abs(x - current.startX),
+            h: Math.abs(y - current.startY),
+          };
+        });
+
         return;
       }
 
-      // Object gesture handles its own move via bubbling from object nodes,
-      // but we forward here too in case pointer moved off the node.
-      gesture.onPointerMove(e, screenToWorld(e.clientX, e.clientY));
+      /*
+       * Object gestures.
+       */
+      gesture.onPointerMove(
+        event,
+        screenToWorld(event.clientX, event.clientY),
+      );
     },
-    [marquee, gesture, panBy, zoomAt, screenToWorld, activeTool, scheduleDrawingFlush],
+    [
+      marquee,
+      gesture,
+      panBy,
+      zoomAt,
+      screenToWorld,
+      activeTool,
+      scheduleDrawingFlush,
+    ],
   );
 
+  /*
+   * Finish marquee selection.
+   */
   const finishMarquee = useCallback(() => {
     if (!marquee || !doc) return;
-    // Convert screen-space marquee rect to world space using camera
-    const topLeft = screenToWorld(marquee.x, marquee.y);
-    const bottomRight = screenToWorld(marquee.x + marquee.w, marquee.y + marquee.h);
 
-    const hits = Object.values(doc.objects).filter((o) => {
-      if (o.hidden) return false;
-      return o.x < bottomRight.x && o.x + o.width > topLeft.x && o.y < bottomRight.y && o.y + o.height > topLeft.y;
+    const topLeft = screenToWorld(
+      marquee.x,
+      marquee.y,
+    );
+
+    const bottomRight = screenToWorld(
+      marquee.x + marquee.w,
+      marquee.y + marquee.h,
+    );
+
+    const hits = Object.values(doc.objects).filter((object) => {
+      if (object.hidden) return false;
+
+      return (
+        object.x < bottomRight.x &&
+        object.x + object.width > topLeft.x &&
+        object.y < bottomRight.y &&
+        object.y + object.height > topLeft.y
+      );
     });
 
     if (marquee.w > 4 || marquee.h > 4) {
-      const ids = hits.map((o) => o.id);
+      const ids = hits.map((object) => object.id);
+
       if (marquee.additive) {
-        setSelection(Array.from(new Set([...selectedIds, ...ids])));
+        setSelection(
+          Array.from(
+            new Set([
+              ...selectedIds,
+              ...ids,
+            ]),
+          ),
+        );
       } else {
         setSelection(ids);
       }
     } else if (!marquee.additive) {
       clearSelection();
     }
-    setMarquee(null);
-  }, [marquee, doc, screenToWorld, selectedIds, setSelection, clearSelection]);
 
+    setMarquee(null);
+  }, [
+    marquee,
+    doc,
+    screenToWorld,
+    selectedIds,
+    setSelection,
+    clearSelection,
+  ]);
+
+  /*
+   * Commit a completed drawing stroke.
+   *
+   * The important part:
+   * We never change activeTool here.
+   *
+   * Therefore completing a stroke does NOT kick the user back into
+   * Select/Text mode.
+   */
   const finishDrawing = useCallback(
     (pointerId: number) => {
-      if (drawingRaf.current != null) {
+      if (drawingRaf.current !== null) {
         cancelAnimationFrame(drawingRaf.current);
         drawingRaf.current = null;
       }
+
       const points = drawingPoints.current;
 
-      if (drawSettings.tool === 'eraser' && points.length > 0 && doc) {
-        // Eraser hit-tests any drawing object intersecting the eraser points
+      /*
+       * Eraser mode.
+       */
+      if (
+        drawSettings.tool === 'eraser' &&
+        points.length > 0 &&
+        doc
+      ) {
         const hitDrawingIds: string[] = [];
-        const pad = Math.max(12, drawSettings.strokeWidth);
 
-        Object.values(doc.objects).forEach((o) => {
-          if (o.type !== 'drawing' || o.locked || o.hidden) return;
-          // Bounding box test against eraser stroke points
+        const padding = Math.max(
+          12,
+          drawSettings.strokeWidth,
+        );
+
+        Object.values(doc.objects).forEach((object) => {
+          if (
+            object.type !== 'drawing' ||
+            object.locked ||
+            object.hidden
+          ) {
+            return;
+          }
+
           const isHit = points.some(
-            (p) => p.x >= o.x - pad && p.x <= o.x + o.width + pad && p.y >= o.y - pad && p.y <= o.y + o.height + pad
+            (point) =>
+              point.x >= object.x - padding &&
+              point.x <= object.x + object.width + padding &&
+              point.y >= object.y - padding &&
+              point.y <= object.y + object.height + padding,
           );
-          if (isHit) hitDrawingIds.push(o.id);
+
+          if (isHit) {
+            hitDrawingIds.push(object.id);
+          }
         });
 
         if (hitDrawingIds.length > 0) {
-          useCanvasStore.getState().deleteObjects(hitDrawingIds);
+          useCanvasStore
+            .getState()
+            .deleteObjects(hitDrawingIds);
         }
       } else if (points.length > 1) {
-        const b = drawingBounds.current;
-        const pad = Math.max(8, drawSettings.strokeWidth);
-        const localPoints = points.map((p) => ({ x: p.x - (b.minX - pad), y: p.y - (b.minY - pad) }));
-        const path = drawSettings.smoothing ? pointsToSmoothedPath(localPoints) : pointsToPath(localPoints);
+        /*
+         * Normal drawing.
+         */
+        const bounds = drawingBounds.current;
 
-        const lineCap = drawSettings.tool === 'fountain' || drawSettings.tool === 'highlighter' ? 'square' : 'round';
-        const linejoin = drawSettings.tool === 'highlighter' ? 'miter' : 'round';
+        const padding = Math.max(
+          8,
+          drawSettings.strokeWidth,
+        );
+
+        const localPoints = points.map((point) => ({
+          x: point.x - (bounds.minX - padding),
+          y: point.y - (bounds.minY - padding),
+        }));
+
+        const path = drawSettings.smoothing
+          ? pointsToSmoothedPath(localPoints)
+          : pointsToPath(localPoints);
+
+        const lineCap =
+          drawSettings.tool === 'fountain' ||
+          drawSettings.tool === 'highlighter'
+            ? 'square'
+            : 'round';
+
+        const linejoin =
+          drawSettings.tool === 'highlighter'
+            ? 'miter'
+            : 'round';
+
+        const now = Date.now();
 
         addObject({
           id: crypto.randomUUID(),
           type: 'drawing',
-          x: b.minX - pad,
-          y: b.minY - pad,
-          width: Math.max(2, b.maxX - b.minX + pad * 2),
-          height: Math.max(2, b.maxY - b.minY + pad * 2),
+
+          x: bounds.minX - padding,
+          y: bounds.minY - padding,
+
+          width: Math.max(
+            2,
+            bounds.maxX - bounds.minX + padding * 2,
+          ),
+
+          height: Math.max(
+            2,
+            bounds.maxY - bounds.minY + padding * 2,
+          ),
+
           rotation: 0,
           zIndex: 0,
+
           locked: false,
           hidden: false,
-          createdAt: Date.now(),
-          updatedAt: Date.now(),
+
+          createdAt: now,
+          updatedAt: now,
+
           data: {
             path,
             stroke: drawSettings.stroke,
@@ -354,123 +739,268 @@ export function Canvas() {
           },
         });
       }
+
+      /*
+       * Reset only the temporary stroke state.
+       *
+       * activeTool intentionally remains 'draw'.
+       */
       drawingPoints.current = [];
       drawingPointerId.current = null;
-      if (drawingPathRef.current) drawingPathRef.current.setAttribute('d', '');
+
+      if (drawingPathRef.current) {
+        drawingPathRef.current.setAttribute('d', '');
+      }
+
       activePointers.current.delete(pointerId);
+
       isPanning.current = false;
     },
     [addObject, drawSettings, doc],
   );
 
-
   const handleViewportPointerUp = useCallback(
-    (e: React.PointerEvent) => {
-      if (activeTool === 'draw' && drawingPointerId.current === e.pointerId) {
-        finishDrawing(e.pointerId);
+    (event: React.PointerEvent) => {
+      /*
+       * Finish the current doodle stroke.
+       *
+       * No setTool() call is made here.
+       */
+      if (
+        activeTool === 'draw' &&
+        drawingPointerId.current === event.pointerId
+      ) {
+        finishDrawing(event.pointerId);
         return;
       }
-      activePointers.current.delete(e.pointerId);
-      if (activePointers.current.size < 2) pinchState.current = null;
+
+      activePointers.current.delete(event.pointerId);
+
+      if (activePointers.current.size < 2) {
+        pinchState.current = null;
+      }
+
       isPanning.current = false;
-      if (marquee) finishMarquee();
+
+      if (marquee) {
+        finishMarquee();
+      }
+
       gesture.onPointerUp();
     },
-    [marquee, finishMarquee, gesture, activeTool, finishDrawing],
+    [
+      marquee,
+      finishMarquee,
+      gesture,
+      activeTool,
+      finishDrawing,
+    ],
   );
 
+  /*
+   * Select/toggle an object.
+   */
   const handleSelect = useCallback(
     (id: string, additive: boolean) => {
       if (additive) {
-        const set = new Set(selectedIds);
-        if (set.has(id)) set.delete(id);
-        else set.add(id);
-        setSelection(Array.from(set));
-      } else {
-        setSelection([id]);
+        const selection = new Set(selectedIds);
+
+        if (selection.has(id)) {
+          selection.delete(id);
+        } else {
+          selection.add(id);
+        }
+
+        setSelection(Array.from(selection));
+        return;
       }
+
+      setSelection([id]);
     },
     [selectedIds, setSelection],
   );
 
+  /*
+   * Fit all visible objects into the viewport.
+   */
   const handleFitAll = useCallback(() => {
     if (!doc || !viewportRef.current) return;
-    const objs = Object.values(doc.objects).filter((o) => !o.hidden);
-    if (objs.length === 0) {
-      fitToObjects(null, viewportRef.current.clientWidth, viewportRef.current.clientHeight);
+
+    const objects = Object.values(doc.objects).filter(
+      (object) => !object.hidden,
+    );
+
+    if (objects.length === 0) {
+      fitToObjects(
+        null,
+        viewportRef.current.clientWidth,
+        viewportRef.current.clientHeight,
+      );
+
       return;
     }
-    const bounds = objs.reduce(
-      (acc, o) => ({
-        minX: Math.min(acc.minX, o.x),
-        minY: Math.min(acc.minY, o.y),
-        maxX: Math.max(acc.maxX, o.x + o.width),
-        maxY: Math.max(acc.maxY, o.y + o.height),
+
+    const bounds = objects.reduce(
+      (result, object) => ({
+        minX: Math.min(result.minX, object.x),
+        minY: Math.min(result.minY, object.y),
+        maxX: Math.max(
+          result.maxX,
+          object.x + object.width,
+        ),
+        maxY: Math.max(
+          result.maxY,
+          object.y + object.height,
+        ),
       }),
-      { minX: Infinity, minY: Infinity, maxX: -Infinity, maxY: -Infinity },
+      {
+        minX: Infinity,
+        minY: Infinity,
+        maxX: -Infinity,
+        maxY: -Infinity,
+      },
     );
-    fitToObjects(bounds, viewportRef.current.clientWidth, viewportRef.current.clientHeight);
+
+    fitToObjects(
+      bounds,
+      viewportRef.current.clientWidth,
+      viewportRef.current.clientHeight,
+    );
   }, [doc, fitToObjects]);
 
-  // Expose imperative controls for the toolbar via window-scoped ref pattern
+  /*
+   * Expose canvas controls to the existing toolbar.
+   *
+   * This preserves the current application's window-scoped integration
+   * instead of introducing another state-management layer.
+   */
   useEffect(() => {
-    (window as unknown as Record<string, unknown>).__canvasControls = {
+    (
+      window as unknown as Record<string, unknown>
+    ).__canvasControls = {
       zoomIn: () => {
         if (!viewportRef.current) return;
-        const r = viewportRef.current.getBoundingClientRect();
-        setZoom(camera.current.zoom * 1.2, r.width / 2, r.height / 2);
+
+        const rect =
+          viewportRef.current.getBoundingClientRect();
+
+        setZoom(
+          camera.current.zoom * 1.2,
+          rect.width / 2,
+          rect.height / 2,
+        );
       },
+
       zoomOut: () => {
         if (!viewportRef.current) return;
-        const r = viewportRef.current.getBoundingClientRect();
-        setZoom(camera.current.zoom / 1.2, r.width / 2, r.height / 2);
+
+        const rect =
+          viewportRef.current.getBoundingClientRect();
+
+        setZoom(
+          camera.current.zoom / 1.2,
+          rect.width / 2,
+          rect.height / 2,
+        );
       },
+
       resetZoom: () => {
         if (!viewportRef.current) return;
-        const r = viewportRef.current.getBoundingClientRect();
-        setZoom(1, r.width / 2, r.height / 2);
+
+        const rect =
+          viewportRef.current.getBoundingClientRect();
+
+        setZoom(
+          1,
+          rect.width / 2,
+          rect.height / 2,
+        );
       },
+
       fitAll: handleFitAll,
+
       getZoom: () => camera.current.zoom,
+
       getViewportCenterWorld: () => {
-        if (!viewportRef.current) return { x: 0, y: 0 };
-        const r = viewportRef.current.getBoundingClientRect();
-        return screenToWorld(r.width / 2, r.height / 2);
+        if (!viewportRef.current) {
+          return { x: 0, y: 0 };
+        }
+
+        const rect =
+          viewportRef.current.getBoundingClientRect();
+
+        return screenToWorld(
+          rect.width / 2,
+          rect.height / 2,
+        );
       },
+
       subscribeZoom,
     };
-  }, [setZoom, handleFitAll, camera, screenToWorld, subscribeZoom]);
+  }, [
+    setZoom,
+    handleFitAll,
+    camera,
+    screenToWorld,
+    subscribeZoom,
+  ]);
 
   if (!doc) return null;
 
-  const sortedObjects = doc.objectOrder.map((id) => doc.objects[id]).filter(Boolean);
-  const bgClass = `canvas-bg canvas-bg--${doc.background}`;
+  const sortedObjects = doc.objectOrder
+    .map((id) => doc.objects[id])
+    .filter(Boolean);
+
+  const backgroundClass =
+    `canvas-bg canvas-bg--${doc.background}`;
 
   return (
     <div
       ref={viewportRef}
-      className={`canvas-viewport${activeTool === 'draw' ? ' is-drawing' : ''}`}
+      className={`canvas-viewport${
+        activeTool === 'draw'
+          ? ' is-drawing'
+          : ''
+      }`}
       onWheel={handleWheel}
       onPointerDown={handleViewportPointerDown}
       onPointerMove={handleViewportPointerMove}
       onPointerUp={handleViewportPointerUp}
       onPointerCancel={handleViewportPointerUp}
     >
-      <div ref={worldRef} className="canvas-world" data-canvas-bg="true">
-        <div className={bgClass} data-canvas-bg="true" />
-        {sortedObjects.map((obj) => (
+      <div
+        ref={worldRef}
+        className="canvas-world"
+        data-canvas-bg="true"
+      >
+        <div
+          className={backgroundClass}
+          data-canvas-bg="true"
+        />
+
+        {sortedObjects.map((object) => (
           <CanvasObjectNode
-            key={obj.id}
-            obj={obj}
-            isSelected={selectedIds.includes(obj.id)}
+            key={object.id}
+            obj={object}
+            isSelected={selectedIds.includes(object.id)}
             zoom={camera.current.zoom}
             onSelect={handleSelect}
             gesture={gesture}
             screenToWorld={screenToWorld}
           />
         ))}
+
         {activeTool === 'draw' && (
-          <svg className="drawing-layer" width="12000" height="12000" style={{ left: -6000, top: -6000 }} aria-hidden="true">
+          <svg
+            className="drawing-layer"
+            width="12000"
+            height="12000"
+            style={{
+              left: -6000,
+              top: -6000,
+            }}
+            aria-hidden="true"
+          >
             <path
               ref={drawingPathRef}
               d=""
@@ -487,7 +1017,15 @@ export function Canvas() {
       </div>
 
       {marquee && (
-        <div className="marquee" style={{ left: marquee.x, top: marquee.y, width: marquee.w, height: marquee.h }} />
+        <div
+          className="marquee"
+          style={{
+            left: marquee.x,
+            top: marquee.y,
+            width: marquee.w,
+            height: marquee.h,
+          }}
+        />
       )}
     </div>
   );
